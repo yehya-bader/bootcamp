@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التحليل البرمجي الأكاديمي: المكتبة مقابل إطار العمل (Library vs Framework) - إعداد: يحيى ناصر حمود بادر</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        warmbg: '#faf8f5',
+                        warmcard: '#ffffff',
+                        warmborder: '#e7e2d8',
+                        brandindigo: '#4f46e5',
+                        branddark: '#1e293b',
+                        accentemerald: '#059669',
+                        accentamber: '#d97706',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #faf8f5;
+            color: #1e293b;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        /* Responsive chart container styling */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 580px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 380px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 360px;
+            }
+        }
+
+        .tab-btn.active {
+            border-bottom-color: #4f46e5;
+            color: #4f46e5;
+            font-weight: 700;
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+
+        .code-block {
+            font-family: 'Courier New', Courier, monospace;
+            direction: ltr;
+            text-align: left;
+        }
+    </style>
+</head>
+<body class="bg-warmbg text-branddark antialiased min-h-screen flex flex-col">
+
+    <!-- Chosen Palette: Academic Warm Studio (Warm Neutral #FAF8F5, Deep Charcoal #1E293B, Indigo Accent #4F46E5, Emerald Accent #059669, Amber Accent #D97706) -->
+    <!-- Application Structure Plan:
+        1. Sticky Academic Header & Author Info: Clean navigation with prominent student authorship tag (يحيى ناصر حمود بادر).
+        2. Hero & Contextual Overview: Academic presentation banner displaying research objectives, architecture core, and author identification.
+        3. Module 1: Foundational Definitions & Conceptual Metaphors (Library vs Framework core concepts, control ownership, and physical metaphors).
+        4. Module 2: Inversion of Control (IoC) Visual Simulator (Interactive execution flow contrasting direct invocation vs IoC hooks/callbacks).
+        5. Module 3: Architectural Metrics Dashboard & Comparison Matrix (Chart.js Radar & Bar visualizers + searchable dynamic matrix).
+        6. Module 4: Multi-Ecosystem Deep Dive & Code Comparison (Comprehensive side-by-side snippets across CSS, JavaScript, Java, PHP, and Python).
+        7. Module 5: Academic Summary & Architecture Recommendations (Structured academic conclusions and stack selection criteria).
+    -->
+    <!-- Visualization & Content Choices:
+        - Radar Chart (Chart.js): 6-dimensional comparison (Control, Initial Setup, Replaceability, Learning Curve, Maintenance, Team Consistency).
+        - Bar Chart (Chart.js): Learning Curve vs Time-to-Market vs Structural Rigidity.
+        - IoC Simulator (Vanilla JS): Step-by-step code animation contrasting Direct Call vs IoC Callback.
+        - Code Comparison Panels: Interactive tabbed ecosystem showcasing syntax in 5 programming environments (CSS, JS, Java, PHP, Python).
+        - Filterable Matrix Table: Real-time search and filter capabilities for technical criteria.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. Visual elements use Tailwind, Unicode icons, and HTML styled badges.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- Sticky Academic Navigation Bar -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-warmborder shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <span class="bg-brandindigo text-white font-black text-sm sm:text-base px-3 py-1 rounded-lg">بحث أكاديمي</span>
+                <span class="font-bold text-xs sm:text-sm text-branddark hidden lg:inline">مقارنة معماريات البرمجيات: Library vs Framework</span>
+            </div>
+
+            <!-- Student Author Badge in Header -->
+            <div class="hidden sm:flex items-center space-x-2 space-x-reverse bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-lg text-xs font-bold text-brandindigo">
+                <span> إعداد :</span>
+                <span class="text-branddark font-extrabold">يحيى ناصر حمود بادر</span>
+            </div>
+
+            <nav class="flex items-center space-x-1 sm:space-x-2 space-x-reverse text-xs sm:text-sm font-medium">
+                <a href="#overview" class="px-2 py-1.5 rounded-lg hover:text-brandindigo hover:bg-slate-50 transition-colors">المفاهيم</a>
+                <a href="#ioc-sim" class="px-2 py-1.5 rounded-lg hover:text-brandindigo hover:bg-slate-50 transition-colors">محاكي IoC</a>
+                <a href="#metrics" class="px-2 py-1.5 rounded-lg hover:text-brandindigo hover:bg-slate-50 transition-colors">مصفوفة المقارنة</a>
+                <a href="#ecosystem" class="px-2 py-1.5 rounded-lg hover:text-brandindigo hover:bg-slate-50 transition-colors">الأكواد (5 تقنيات)</a>
+                <a href="#summary" class="px-2.5 py-1.5 bg-brandindigo text-white rounded-lg hover:bg-indigo-700 transition-all font-semibold">الخلاصة</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-10">
+
+        <!-- Hero Banner Section -->
+        <section class="bg-white rounded-2xl p-6 sm:p-10 border border-warmborder shadow-sm text-center relative overflow-hidden">
+            <div class="max-w-4xl mx-auto space-y-5">
+                <!-- Badges Row -->
+                <div class="flex flex-wrap items-center justify-center gap-2">
+                    <span class="inline-flex items-center space-x-1.5 space-x-reverse px-3 py-1 bg-indigo-50 text-brandindigo font-bold text-xs rounded-full border border-indigo-100">
+                        <span>📘 دراسة مقارنة معمارية وشاملة</span>
+                    </span>
+                    <span class="inline-flex items-center space-x-1.5 space-x-reverse px-3 py-1 bg-amber-50 text-accentamber font-bold text-xs rounded-full border border-amber-200">
+                        <span>🎓 إعداد الطالب: <strong>يحيى ناصر حمود بادر</strong></span>
+                    </span>
+                </div>
+
+                <h1 class="text-2xl sm:text-4xl font-black text-branddark leading-tight">
+                    التحليل المعماري للمصطلحات البرمجية:<br>
+                    <span class="text-brandindigo">المكتبات البرمجية (Libraries)</span> مقابل <span class="text-accentemerald">أطر العمل (Frameworks)</span>
+                </h1>
+                
+                <p class="text-slate-600 text-sm sm:text-base leading-relaxed max-w-3xl mx-auto">
+                    تطبيق تفاعلي أكاديمي مصمم لاستعراض الفروق الهندسية الجوهرية، وتطبيق مبدأ <strong>انعكاس التحكم (Inversion of Control - IoC)</strong>، مع دراسة تطبيقية مقارنة مدعومة بالأكواد لتقنيات <strong>CSS، JavaScript، Java، PHP، و Python</strong>.
+                </p>
+
+                <div class="pt-2 flex flex-wrap justify-center gap-2 text-xs font-semibold">
+                    <span class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg">📜 قانون هوليوود (Hollywood Principle)</span>
+                    <span class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg">⚙️ حقن التبعيات (DI)</span>
+                    <span class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg">📊 رسوم بيانية تفاعلية</span>
+                    <span class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-lg">💻 أمثلة أكواد حية</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 1: Foundational Definitions & Metaphors -->
+        <section id="overview" class="space-y-6">
+            <div class="bg-white p-6 rounded-xl border border-warmborder shadow-sm space-y-3">
+                <div class="flex items-center space-x-2 space-x-reverse border-b border-slate-100 pb-3">
+                    <span class="w-3 h-3 rounded-full bg-brandindigo inline-block"></span>
+                    <h2 class="text-xl sm:text-2xl font-bold text-branddark">1. المفاهيم الأساسية والتشبيهات المعمارية</h2>
+                </div>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    تعتمد معمارية البرمجيات الحديثة على تجريد التعقيد وإعادة استخدام الشفرة (Code Reusability). ورغم الشيوع الخاطئ لاستخدام مصطلحي "المكتبة" و"إطار العمل" بالتبادل، إلا أن هناك فارقاً معمارياً جوهرياً يتلخص في <strong>جهة امتلاك تدفق التنفيذ (Control Ownership)</strong> وسيادة المطور على دورة حياة التطبيق.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Library Card -->
+                <div class="bg-white rounded-xl p-6 border-t-4 border-t-brandindigo border-x border-b border-warmborder shadow-sm flex flex-col justify-between space-y-4">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 block uppercase">مفتاح التحكم بيدك</span>
+                                <h3 class="text-xl font-black text-brandindigo">المكتبة (Library)</h3>
+                            </div>
+                            <span class="px-3 py-1 bg-indigo-50 text-brandindigo text-xs font-bold rounded-lg border border-indigo-100">المطور هو المايسترو</span>
+                        </div>
+                        <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                            تجمّع ينظّم مجموعة من الدوال (Functions) والأصناف (Classes) المعزولة والمكتوبة مسبقاً لأداء وظيفة مخصصة ومحددة (مثل حساب الرياضيات، معالجة التواريخ، أو التشفير). يظل المطور يملك البرنامج الرئيسي وتدفق التنفيذ، ويقوم باستدعاء المكتبة في الوقت والمكان الذي يحدده بنفسه.
+                        </p>
+
+                        <!-- Metaphor Box -->
+                        <div class="bg-indigo-50/70 p-4 rounded-xl border border-indigo-100 text-xs space-y-2">
+                            <div class="flex items-center space-x-2 space-x-reverse">
+                                <span class="text-base">🧰</span>
+                                <h4 class="font-bold text-brandindigo text-sm">التشبيه المادي: صندوق الأدوات / أثاث المنزل</h4>
+                            </div>
+                            <p class="text-slate-700 leading-relaxed">
+                                يشبه شراء أثاث مستقل أو أدوات صيانة؛ يمكنك شراء الكنبة أو المطرقة ووضعها في أي مكان تراه مناسباً داخل منزلك، واستخدامها وقتما تشاء دون أن يفرض عليك بائع الأثاث كيفية تصميم غرفك أو نمط حياتك.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 pt-2 border-t border-slate-100 text-xs text-slate-700">
+                        <div class="flex items-center space-x-2 space-x-reverse text-emerald-700 font-semibold">
+                            <span>✔️ مرونة معمارية مطلقة وبناء مخصص بالكامل.</span>
+                        </div>
+                        <div class="flex items-center space-x-2 space-x-reverse text-emerald-700 font-semibold">
+                            <span>✔️ سهولة الاستبدال أو الاستغناء دون الهدم الكلي.</span>
+                        </div>
+                        <div class="flex items-center space-x-2 space-x-reverse text-rose-700 font-semibold">
+                            <span>❌ عبء إضافي على المطور لربط القطع وإدارة التبعيات.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Framework Card -->
+                <div class="bg-white rounded-xl p-6 border-t-4 border-t-accentemerald border-x border-b border-warmborder shadow-sm flex flex-col justify-between space-y-4">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                            <div>
+                                <span class="text-[10px] font-bold text-slate-400 block uppercase">التحكم مأسور بالإطار</span>
+                                <h3 class="text-xl font-black text-accentemerald">إطار العمل (Framework)</h3>
+                            </div>
+                            <span class="px-3 py-1 bg-emerald-50 text-accentemerald text-xs font-bold rounded-lg border border-emerald-100">الإطار يقود التنفيذ</span>
+                        </div>
+                        <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                            هيكل برمجي وهندسي شامل يمثل "الهيكل العظمي" للتطبيق. يفرض إطار العمل نمطاً معمارياً معيناً (مثل MVC)، ويتحكم بدورة حياة النظام بالكامل، محتفظاً بالدالة الرئيسية ومتكفلاً باستدعاء الكود الخاص بك داخل نقاط الربط (Hooks / Callbacks) المحددة مسبقاً.
+                        </p>
+
+                        <!-- Metaphor Box -->
+                        <div class="bg-emerald-50/70 p-4 rounded-xl border border-emerald-100 text-xs space-y-2">
+                            <div class="flex items-center space-x-2 space-x-reverse">
+                                <span class="text-base">🏗️</span>
+                                <h4 class="font-bold text-accentemerald text-sm">التشبيه المادي: نموذج البناء الهيكلي المسبق</h4>
+                            </div>
+                            <p class="text-slate-700 leading-relaxed">
+                                يشبه استئجار شقة داخل مجمع سكني جاهز؛ الإطار يوفر التوصيلات الأساسية للكهرباء والماء والجدران الحاملة، ودورك يقتصر على ملء الشقة بالألوان والفرش في الأماكن المخصصة دون التعديل في البنية الخرسانية.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 pt-2 border-t border-slate-100 text-xs text-slate-700">
+                        <div class="flex items-center space-x-2 space-x-reverse text-emerald-700 font-semibold">
+                            <span>✔️ توحيد المعايير بين أعضاء الفرق البرمجية الضخمة.</span>
+                        </div>
+                        <div class="flex items-center space-x-2 space-x-reverse text-emerald-700 font-semibold">
+                            <span>✔️ إنتاجية وسرعة فائقة في البناء (Batteries Included).</span>
+                        </div>
+                        <div class="flex items-center space-x-2 space-x-reverse text-rose-700 font-semibold">
+                            <span>❌ قيود معمارية وصعوبة بالغة في التبديل (Vendor Lock-in).</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 2: Inversion of Control Simulator -->
+        <section id="ioc-sim" class="space-y-6">
+            <div class="bg-white p-6 rounded-xl border border-warmborder shadow-sm space-y-3">
+                <div class="flex items-center space-x-2 space-x-reverse border-b border-slate-100 pb-3">
+                    <span class="w-3 h-3 rounded-full bg-accentemerald inline-block"></span>
+                    <h2 class="text-xl sm:text-2xl font-bold text-branddark">2. حجر الزاوية الهندسي: انعكاس التحكم (Inversion of Control - IoC)</h2>
+                </div>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    يُجمع خبراء الهندسة البرمجية (مثل مارتن فاولر) على أن <strong>انعكاس التحكم (IoC)</strong> هو الفارق التقني الحاسم والوحيد بين المكتبة وإطار العمل. يستند هذا المبدأ إلى قانون هوليوود الشهير: <em class="text-brandindigo font-bold bg-indigo-50 px-2 py-0.5 rounded">"لا تتصل بنا، نحن سنتصل بك" (Don't call us, we'll call you)</em>. اختبر المحاكي التفاعلي التوضيحي لملاحظة الفرق في سريان التنفيذ بين النمطين.
+                </p>
+            </div>
+
+            <!-- Simulator Interactive Card -->
+            <div class="bg-white rounded-xl p-6 border border-warmborder shadow-sm space-y-6">
+                <!-- Mode Switcher Header -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <div class="flex items-center space-x-3 space-x-reverse">
+                        <span class="font-bold text-xs sm:text-sm text-slate-700">اختر نمط التدفق للمحاكاة:</span>
+                        <div class="inline-flex rounded-lg border border-slate-300 bg-white p-1">
+                            <button id="btn-mode-lib" onclick="setIocMode('library')" class="px-3 py-1.5 text-xs font-bold rounded-md bg-brandindigo text-white transition-all shadow-sm">تدفق المكتبة (Direct Control)</button>
+                            <button id="btn-mode-fw" onclick="setIocMode('framework')" class="px-3 py-1.5 text-xs font-bold rounded-md text-slate-600 hover:text-brandindigo transition-all">تدفق إطار العمل (IoC)</button>
+                        </div>
+                    </div>
+                    <button onclick="runIocSimulation()" class="w-full sm:w-auto px-5 py-2 bg-accentemerald hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition-all shadow-sm flex items-center justify-center space-x-2 space-x-reverse">
+                        <span>▶ تشغيل خطوات سريان التنفيذ</span>
+                    </button>
+                </div>
+
+                <!-- Simulation Visual Steps -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                    <!-- Step 1 -->
+                    <div id="sim-step-1" class="p-4 rounded-xl border border-slate-200 bg-white transition-all duration-300 space-y-2">
+                        <span class="text-[10px] font-bold text-slate-400 block">المرحلة الأولى</span>
+                        <h4 id="sim-title-1" class="font-bold text-slate-800 text-sm">بدء التطبيق</h4>
+                        <p id="sim-desc-1" class="text-xs text-slate-500">اضغط على زر التشغيل للبدء...</p>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div id="sim-step-2" class="p-4 rounded-xl border border-slate-200 bg-white transition-all duration-300 space-y-2">
+                        <span class="text-[10px] font-bold text-slate-400 block">المرحلة الثانية</span>
+                        <h4 id="sim-title-2" class="font-bold text-slate-800 text-sm">مركز التحكم والتنفيذ</h4>
+                        <p id="sim-desc-2" class="text-xs text-slate-500">انتظار بدء الخطوات...</p>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div id="sim-step-3" class="p-4 rounded-xl border border-slate-200 bg-white transition-all duration-300 space-y-2">
+                        <span class="text-[10px] font-bold text-slate-400 block">المرحلة الثالثة</span>
+                        <h4 id="sim-title-3" class="font-bold text-slate-800 text-sm">مخرج النتيجة النهائية</h4>
+                        <p id="sim-desc-3" class="text-xs text-slate-500">انتظار التحديث...</p>
+                    </div>
+                </div>
+
+                <!-- Live Simulation Output Console -->
+                <div class="bg-slate-900 text-slate-100 p-4 rounded-xl text-xs space-y-2 font-mono border border-slate-800">
+                    <div class="flex justify-between items-center text-slate-400 border-b border-slate-800 pb-2 text-[11px]">
+                        <span>🖥️ سجل التنفيذ البرمجي المباشر (Execution Trace)</span>
+                        <span id="sim-status-tag" class="px-2 py-0.5 bg-slate-800 rounded text-[10px] text-indigo-400 font-bold">جاهز للمحاكاة</span>
+                    </div>
+                    <pre id="sim-console" class="whitespace-pre-wrap leading-relaxed text-emerald-400 text-[11px] code-block">// اختر النمط واضغط تشغيل لمراقبة أي الطرفين يملك زمام التنفيذ</pre>
+                </div>
+
+                <!-- Architectural Patterns of IoC -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-100 text-xs">
+                    <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                        <h5 class="font-bold text-brandindigo mb-1">1. نمط القالب (Template Method Pattern)</h5>
+                        <p class="text-slate-600 leading-relaxed">يعرّف الإطار الهيكل العام للخوارزمية، ويترك للمطور ملء الخطوات الفرعية ليقوم الإطار باستدعائها تلقائياً.</p>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                        <h5 class="font-bold text-brandindigo mb-1">2. الأحداث والمستدعات (Callbacks & Events)</h5>
+                        <p class="text-slate-600 leading-relaxed">تسجيل دوال مخصصة تُستدعى بواسطة الإطار عند وقوع حدث معالج مسبقاً (مثل استقبال طلب HTTP جديد).</p>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                        <h5 class="font-bold text-brandindigo mb-1">3. حقن التبعيات (Dependency Injection - DI)</h5>
+                        <p class="text-slate-600 leading-relaxed">تتولى حاوية الإطار (IoC Container) إنشاء الكائنات وحقن التبعيات آلياً دون الحاجة لاستخدام <code class="bg-white px-1">new</code>.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 3: Evaluation Metrics Dashboard & Matrix Table -->
+        <section id="metrics" class="space-y-6">
+            <div class="bg-white p-6 rounded-xl border border-warmborder shadow-sm space-y-3">
+                <div class="flex items-center space-x-2 space-x-reverse border-b border-slate-100 pb-3">
+                    <span class="w-3 h-3 rounded-full bg-accentamber inline-block"></span>
+                    <h2 class="text-xl sm:text-2xl font-bold text-branddark">3. مصفوفة المقارنة الهندسية والرسوم البيانية</h2>
+                </div>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    استكشف الرسوم البيانية التفاعلية للتحليل الكمي لمقاييس البرمجيات، تليها مصفوفة مقارنة شاملة قابلة للبحث والفلترة الفورية لتقييم الأبعاد الهندسية المختلفة.
+                </p>
+            </div>
+
+            <!-- Charts Container Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Radar Chart Card -->
+                <div class="bg-white p-5 rounded-xl border border-warmborder shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-branddark mb-1">مخطط التوازن المعماري (Radar Scale)</h3>
+                        <p class="text-xs text-slate-500 mb-4">تقييم 6 أبعاد هندسية حاسمة بين المكتبة وإطار العمل</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Bar Chart Card -->
+                <div class="bg-white p-5 rounded-xl border border-warmborder shadow-sm flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-branddark mb-1">منحنى التعلم مقابل سرعة البناء الصارم</h3>
+                        <p class="text-xs text-slate-500 mb-4">مقارنة الوقت المطلوب لبدء تطبيق مقابل جهود الصيانة</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Searchable Matrix Table -->
+            <div class="bg-white rounded-xl border border-warmborder shadow-sm overflow-hidden space-y-0">
+                <div class="p-5 border-b border-warmborder flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/70">
+                    <div>
+                        <h3 class="font-bold text-base sm:text-lg text-branddark">مصفوفة المقارنة الشاملة والأبعاد الهندسية</h3>
+                        <p class="text-xs text-slate-500">ابحث أو صَفِّ المعايير المعمارية للوصول السريع</p>
+                    </div>
+
+                    <!-- Search Input and Quick Filters -->
+                    <div class="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+                        <div class="inline-flex rounded-lg border border-slate-200 bg-white p-1 text-xs">
+                            <button onclick="filterMatrixCategory('all')" class="px-2.5 py-1 rounded-md font-bold text-slate-700 hover:bg-slate-100">الكل</button>
+                            <button onclick="filterMatrixCategory('control')" class="px-2.5 py-1 rounded-md font-bold text-slate-700 hover:bg-slate-100">التحكم</button>
+                            <button onclick="filterMatrixCategory('performance')" class="px-2.5 py-1 rounded-md font-bold text-slate-700 hover:bg-slate-100">الأداء</button>
+                        </div>
+                        <input type="text" id="matrixSearch" onkeyup="searchMatrix()" placeholder="ابحث في الأبعاد المعمارية..." class="w-full sm:w-48 px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-none focus:border-brandindigo">
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-right text-xs">
+                        <thead class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="p-3.5 sm:p-4">البعد المعماري / المعيار</th>
+                                <th class="p-3.5 sm:p-4 text-brandindigo">المكتبة البرمجية (Library)</th>
+                                <th class="p-3.5 sm:p-4 text-accentemerald">إطار العمل (Framework)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matrixTableBody" class="divide-y divide-slate-100">
+                            <!-- Row 1 -->
+                            <tr data-category="control" class="hover:bg-slate-50/80 transition-colors">
+                                <td class="p-3.5 sm:p-4 font-bold text-slate-800">1. سريان التحكم (Control Flow)</td>
+                                <td class="p-3.5 sm:p-4 text-slate-600">المطور ينادي المكتبة صراحة؛ التحكم مباشر وفي اليد.</td>
+                                <td class="p-3.5 sm:p-4 text-slate-600">الإطار ينادي كود المطور عبر (Inversion of Control - IoC).</td>
+                            </tr>
+                            <!-- Row 2 -->
+                            <tr data-category="control" class="hover:bg-slate-50/80 transition-colors">
+                                <td class="p-3.5 sm:p-4 font-bold text-slate-800">2. الهيكل المعماري (Architecture)</td>
+                                <td class="p-3.5 sm:p-4 text-slate-600">حرية مطلقة؛ المطور يبني الهيكل والقواعد كلوحة بيضاء.</td>
+                                <td class="p-3.5 sm:p-4 text-slate-600">الإطار يفرض هيكلية صارمة وأنماط تصميمة قياسية (MVC).</td>
+                            </tr>
+                            <!-- Row 3 -->
+                            <tr data-category="performance" class="hover:bg-slate-50/80 transition-colors">
+                                <td class="p-3.5 sm:p-4 font-bold text-slate-800">3. القابلية للاستبدال (Replaceability)</td>
+                                <td class="p-3.5 sm:p-4 text-slate-600">عالية جداً؛ تبديل مكتبة بأخرى لا يهدد باقي النظام.</td>
+                                <td class="p-3.5 sm:p-4 text-slate-600">منخفضة؛ استبدال الإطار يتطلب إعادة كتابة الشفرة من الصفر (Lock-in).</td>
+                            </tr>
+                            <!-- Row 4 -->
+                            <tr data-category="performance" class="hover:bg-slate-50/80 transition-colors">
+                                <td class="p-3.5 sm:p-4 font-bold text-slate-800">4. حجم الحزمة والأداء (Bundle Size)</td>
+                                <td class="p-3.5 sm:p-4 text-slate-600">خفيفة للغاية؛ لا تدمج سوى الكود المحدد للوظيفة.</td>
+                                <td class="p-3.5 sm:p-4 text-slate-600">أثقل نسبياً؛ تتضمن طبقات تجريد وميزات قد لا تُستخدم برمجياً.</td>
+                            </tr>
+                            <!-- Row 5 -->
+                            <tr data-category="control" class="hover:bg-slate-50/80 transition-colors">
+                                <td class="p-3.5 sm:p-4 font-bold text-slate-800">5. منحنى التعلم (Learning Curve)</td>
+                                <td class="p-3.5 sm:p-4 text-slate-600">بسيط؛ يتطلب فهم وظائف واجهة البرمجة (API) للمكتبة فقط.</td>
+                                <td class="p-3.5 sm:p-4 text-slate-600">حاد؛ يتطلب فهم دورة حياة الإطار والتوجيه والحاقن.</td>
+                            </tr>
+                            <!-- Row 6 -->
+                            <tr data-category="performance" class="hover:bg-slate-50/80 transition-colors">
+                                <td class="p-3.5 sm:p-4 font-bold text-slate-800">6. الترقية والتحديثات الأمنية</td>
+                                <td class="p-3.5 sm:p-4 text-slate-600">تتطلب تتبع وتحديث عشرات المكتبات المستقلة وحل التعارضات.</td>
+                                <td class="p-3.5 sm:p-4 text-slate-600">تحديث مركزي شامل وموحد يحل الثغرات الأمنية دفعة واحدة.</td>
+                            </tr>
+                            <!-- Row 7 -->
+                            <tr data-category="control" class="hover:bg-slate-50/80 transition-colors">
+                                <td class="p-3.5 sm:p-4 font-bold text-slate-800">7. الاختبار التلقائي (Unit Testing)</td>
+                                <td class="p-3.5 sm:p-4 text-slate-600">اختبار سهل ومباشر للدوال المعزولة دون الحاجة لبيئة معقدة.</td>
+                                <td class="p-3.5 sm:p-4 text-slate-600">يتطلب أدوات محاكاة (Mocks & Drivers) خاصة بدورة حياة الإطار.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 4: Multi-Ecosystem Deep Dive with Live Code Snippets -->
+        <section id="ecosystem" class="space-y-6">
+            <div class="bg-white p-6 rounded-xl border border-warmborder shadow-sm space-y-3">
+                <div class="flex items-center space-x-2 space-x-reverse border-b border-slate-100 pb-3">
+                    <span class="w-3 h-3 rounded-full bg-brandindigo inline-block"></span>
+                    <h2 class="text-xl sm:text-2xl font-bold text-branddark">4. التحليل التطبيقي وأمثلة الأكواد عبر التقنيات الخمس</h2>
+                </div>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    تتضح الفروق بين المكتبات وأطر العمل عند فحص الشفرات البرمجية الفعلية في التقنيات المختلفة. تصفح التبويبات التالية لاستعراض الشرح المعماري وأمثلة الكود المقارنة لتقنيات <strong>CSS، JavaScript، Java، PHP، و Python</strong>.
+                </p>
+            </div>
+
+            <!-- Ecosystem Tabs Window -->
+            <div class="bg-white rounded-xl border border-warmborder shadow-sm overflow-hidden">
+                <!-- Tab Headers -->
+                <div class="flex flex-wrap border-b border-warmborder bg-slate-50/70">
+                    <button onclick="switchTechTab('css')" id="tab-css" class="tab-btn active px-4 sm:px-6 py-3.5 text-xs sm:text-sm font-bold border-b-2 border-transparent transition-all">تنسيقات الويب (CSS)</button>
+                    <button onclick="switchTechTab('js')" id="tab-js" class="tab-btn px-4 sm:px-6 py-3.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-brandindigo transition-all">جافا سكريبت (JS)</button>
+                    <button onclick="switchTechTab('java')" id="tab-java" class="tab-btn px-4 sm:px-6 py-3.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-brandindigo transition-all">جافا (Java)</button>
+                    <button onclick="switchTechTab('php')" id="tab-php" class="tab-btn px-4 sm:px-6 py-3.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-brandindigo transition-all">بي إتش بي (PHP)</button>
+                    <button onclick="switchTechTab('python')" id="tab-python" class="tab-btn px-4 sm:px-6 py-3.5 text-xs sm:text-sm font-bold border-b-2 border-transparent text-slate-600 hover:text-brandindigo transition-all">بايثون (Python)</button>
+                </div>
+
+                <!-- Tab Body Content -->
+                <div class="p-6">
+                    <!-- CSS TAB -->
+                    <div id="tech-css" class="tech-content space-y-6">
+                        <div class="space-y-2">
+                            <h3 class="text-lg font-bold text-branddark">عالم CSS: التحكم الجزئي والتأثيرات مقابل التخطيط المعماري الهيكلي</h3>
+                            <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                                تظهر الفروق في تقنيات CSS من خلال مدى فرض أدوات التنسيق لهيكل HTML وطريقة تخطيط العناصر داخل الصفحات.
+                            </p>
+                        </div>
+
+                        <!-- 3 Cards Breakdown -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                                <span class="px-2 py-0.5 bg-indigo-100 text-brandindigo rounded font-bold">مكتبة CSS</span>
+                                <h4 class="font-bold text-slate-800 text-sm">Animate.css / Normalize.css</h4>
+                                <p class="text-slate-600 leading-relaxed">تقدم فئات محددة لمعالجة المشاكل أو إضافة حركات بصرية. لا تتدخل إطلاقاً في تخطيط هيكل الصفحة.</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                                <span class="px-2 py-0.5 bg-emerald-100 text-accentemerald rounded font-bold">إطار عمل تقليدي</span>
+                                <h4 class="font-bold text-slate-800 text-sm">Bootstrap</h4>
+                                <p class="text-slate-600 leading-relaxed">يفرض نظاماً شبكياً صارماً (Grid System 12-Column) ومكونات جاهزة. يجب أن يلتزم المطور بهيكل Bootstrap لضمان التناسق.</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                                <span class="px-2 py-0.5 bg-amber-100 text-accentamber rounded font-bold">إطار أدوات حديث</span>
+                                <h4 class="font-bold text-slate-800 text-sm">Tailwind CSS</h4>
+                                <p class="text-slate-600 leading-relaxed">إطار عمل يعتمد مبدأ Utility-First مع محرك JIT للضغط وتوليد الأحجام الصغيرة جداً متفوقاً على الأطر التقليدية.</p>
+                            </div>
+                        </div>
+
+                        <!-- Code Snippet Box -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div class="bg-slate-900 text-slate-100 p-4 rounded-xl space-y-2 font-mono">
+                                <span class="text-indigo-400 font-bold border-b border-slate-800 pb-1 block">1. نمط المكتبة (Animate.css)</span>
+                                <pre class="text-slate-300 code-block overflow-x-auto">
+&lt;!-- المطور يحدد التخطيط ويضيف حركة فقط --&gt;
+&lt;div class="my-custom-card animate__animated animate__bounce"&gt;
+  &lt;h1&gt;عنوان مخصص بالكامل&lt;/h1&gt;
+&lt;/div&gt;</pre>
+                            </div>
+
+                            <div class="bg-slate-900 text-slate-100 p-4 rounded-xl space-y-2 font-mono">
+                                <span class="text-emerald-400 font-bold border-b border-slate-800 pb-1 block">2. نمط إطار العمل (Bootstrap Grid & Component)</span>
+                                <pre class="text-slate-300 code-block overflow-x-auto">
+&lt;!-- الإطار يفرض شبكة الصفوف والأعمدة والبنية --&gt;
+&lt;div class="container"&gt;
+  &lt;div class="row"&gt;
+    &lt;div class="col-md-6 card body"&gt;عنوان مسيّر بالإطار&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- JS TAB -->
+                    <div id="tech-js" class="tech-content hidden space-y-6">
+                        <div class="space-y-2">
+                            <h3 class="text-lg font-bold text-branddark">بيئة JavaScript: أدوات DOM المنفردة ضد نقاش React وإطار Angular المتكامل</h3>
+                            <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                                تتميز بيئة جافا سكريبت بالثراء والتداخل المعماري؛ فبينما تعتبر مكتبات مثل Lodash و jQuery أدوات مباشرة، يثير React نقاشاً معمارياً راقياً.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                                <h4 class="font-bold text-brandindigo text-sm">jQuery vs React (النقاش الأكاديمي)</h4>
+                                <p class="text-slate-600 leading-relaxed">
+                                    <strong>jQuery:</strong> مكتبة صريحة؛ تستدعي وظائفها للتحكم بشجرة العناصر DOM مباشرة بيدك.<br>
+                                    <strong>React:</strong> تُصنف رسمياً كـ <em>مكتبة لطبقة العرض UI</em>، لكن محرك Virtual DOM يمارس سلوك IoC؛ فمحتوى المكونات ومحرك الـ Reconciliation هو من يقرر متى وكيف يتم إعادة التحديث.
+                                </p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                                <h4 class="font-bold text-accentemerald text-sm">Angular & Next.js (الأطر المتكاملة)</h4>
+                                <p class="text-slate-600 leading-relaxed">
+                                    <strong>Angular:</strong> إطار عمل شامل ومكتمل يفرض لغة TypeScript، وموجه المسارات (Router)، وحاويات DI مدمجة.<br>
+                                    <strong>Next.js:</strong> إطار تطبيقات ينظم معمارية React لتوفير التوجيه المعتمد على الملفات والعرض من الخادم SSR.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Code Snippet Box -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div class="bg-slate-900 text-slate-100 p-4 rounded-xl space-y-2 font-mono">
+                                <span class="text-indigo-400 font-bold border-b border-slate-800 pb-1 block">1. نمط المكتبة المباشر (jQuery / Vanilla)</span>
+                                <pre class="text-slate-300 code-block overflow-x-auto">
+// المطور ينادي المكتبة صراحة لتحديث العناصر
+$('#submit-btn').click(function() {
+  const data = $('#input').val();
+  let cleanData = _.trim(data); // مكتبة Lodash
+  $('#output').text(cleanData); // المطور يدير DOM
+});</pre>
+                            </div>
+
+                            <div class="bg-slate-900 text-slate-100 p-4 rounded-xl space-y-2 font-mono">
+                                <span class="text-emerald-400 font-bold border-b border-slate-800 pb-1 block">2. نمط إطار العمل وإدارة دورة الحياة (Angular / React Hook)</span>
+                                <pre class="text-slate-300 code-block overflow-x-auto">
+// الإطار هو من ينادي مكوناتك ويعالج دورة الحياة
+@Component({ selector: 'app-user' })
+export class UserComponent implements OnInit {
+  // الإطار يحقن الخدمة تلقائياً (Dependency Injection)
+  constructor(private userService: UserService) {}
+  ngOnInit() { /* الإطار يستدعي هذه الدالة */ }
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- JAVA TAB -->
+                    <div id="tech-java" class="tech-content hidden space-y-6">
+                        <div class="space-y-2">
+                            <h3 class="text-lg font-bold text-branddark">عالم Java: إدارة التبعيات اليدوية مقابل حاوية Spring Boot IoC</h3>
+                            <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                                تتجلى قوة ومبادئ حقن التبعيات (DI) وانعكاس التحكم بالكامل في لغة جافا الموجهة للأنظمة المؤسسية الضخمة.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                                <h4 class="font-bold text-slate-800 text-sm">مكتبة JDBC مقابل إطار Hibernate ORM</h4>
+                                <p class="text-slate-600 leading-relaxed">
+                                    باستخدام <strong>JDBC</strong> يكتب المطور الاستعلامات يدوياً ويدير الإتصال والإغلاق بنفسه. بينما يتولى <strong>Hibernate</strong> تحويل الكائنات لجداول آلياً مع التحذير من مشكلة استعلامات <code class="bg-white px-1">N+1 Problem</code>.
+                                </p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                                <h4 class="font-bold text-brandindigo text-sm">Spring Boot & ApplicationContext Container</h4>
+                                <p class="text-slate-600 leading-relaxed">
+                                    في بيئة Spring، لا يقوم المطور بإنشاء كائنات الخدمة يدوياً عبر <code class="bg-white px-1">new Service()</code>، بل تتكفل حاوية IoC بتصنيع الكائنات وحقنها تلقائياً بالوسوم مثل <code class="bg-white px-1">@Autowired</code>.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Code Comparison -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div class="bg-slate-900 text-slate-100 p-4 rounded-xl space-y-2 font-mono">
+                                <span class="text-indigo-400 font-bold border-b border-slate-800 pb-1 block">1. نمط المكتبة المباشر (Java JDBC)</span>
+                                <pre class="text-slate-300 code-block overflow-x-auto">
+// المطور ينشئ الاتصالات يدويًا ويدير الدورة
+Connection conn = DriverManager.getConnection(URL);
+Statement stmt = conn.createStatement();
+ResultSet rs = stmt.executeQuery("SELECT * FROM users");
+// المطور يغلق الاتصال بنفسه
+conn.close();</pre>
+                            </div>
+
+                            <div class="bg-slate-900 text-slate-100 p-4 rounded-xl space-y-2 font-mono">
+                                <span class="text-emerald-400 font-bold border-b border-slate-800 pb-1 block">2. نمط إطار العمل وحاوية IoC (Spring Boot)</span>
+                                <pre class="text-slate-300 code-block overflow-x-auto">
+@RestController
+public class UserController {
+    // الإطار يحقن التبعية ولا تنشئ الكائن بـ new
+    @Autowired
+    private UserRepository repository;
+
+    @GetMapping("/users")
+    public List&lt;User&gt; getAll() { return repository.findAll(); }
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PHP TAB -->
+                    <div id="tech-php" class="tech-content hidden space-y-6">
+                        <div class="space-y-2">
+                            <h3 class="text-lg font-bold text-branddark">بيئة PHP: تجميع الحزم المنفردة لتشكيل أطر العمل الشاملة</h3>
+                            <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                                تُظهر لغة PHP كيفية بناء إطار عمل عملاق مثل Laravel اعتماداً على تجميع حزم ومكتبات مستقلة.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                                <h4 class="font-bold text-slate-800 text-sm">Guzzle & Symfony Components</h4>
+                                <p class="text-slate-600 leading-relaxed">
+                                    مكتبة <strong>Guzzle</strong> تُستخدم لإجراء طلبات HTTP ومكونات <strong>Symfony Components</strong> هي حزم مكتبات مستقلة يمكن استخدامها في أي مشروع خفيف دون الحاجة لتثبيت إطار عمل.
+                                </p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
+                                <h4 class="font-bold text-accentemerald text-sm">Laravel & Symfony Framework</h4>
+                                <p class="text-slate-600 leading-relaxed">
+                                    يجمع <strong>Laravel</strong> عشرات المكتبات، ويعلوها بـ Service Container، وموجه المسارات (Router)، ونظام Eloquent ORM لبناء تطبيق كامل قائم على نمط MVC.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Code Comparison -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div class="bg-slate-900 text-slate-100 p-4 rounded-xl space-y-2 font-mono">
+                                <span class="text-indigo-400 font-bold border-b border-slate-800 pb-1 block">1. نمط المكتبة (Guzzle HTTP Client)</span>
+                                <pre class="text-slate-300 code-block overflow-x-auto">
+&lt;?php
+// المطور يحمّل المكتبة وينادي الدالة بنفسه
+$client = new \GuzzleHttp\Client();
+$response = $client-&gt;request('GET', 'https://api.com');
+echo $response-&gt;getBody();</pre>
+                            </div>
+
+                            <div class="bg-slate-900 text-slate-100 p-4 rounded-xl space-y-2 font-mono">
+                                <span class="text-emerald-400 font-bold border-b border-slate-800 pb-1 block">2. نمط إطار العمل (Laravel Request Handler)</span>
+                                <pre class="text-slate-300 code-block overflow-x-auto">
+&lt;?php
+// الإطار يستقبل الطلب، يمرره عبر البرمجيات الوسيطة، ثم ينادي دالتك
+Route::get('/users', [UserController::class, 'index']);
+
+class UserController extends Controller {
+    public function index(Request $request) { ... }
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PYTHON TAB -->
+                    <div id="tech-python" class="tech-content hidden space-y-6">
+                        <div class="space-y-2">
+                            <h3 class="text-lg font-bold text-branddark">بيئة Python: الحسابات العلمية المباشرة ضد أطر الويب الكاملة والمصغرة</h3>
+                            <p class="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                                تتراوح بايثون بين المكتبات الرياضية والتحليلية المباشرة، وصولاً إلى أطر الويب المصغرة والشاملة.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                                <h4 class="font-bold text-slate-800 text-sm">Requests & NumPy</h4>
+                                <p class="text-slate-600 leading-relaxed">مكتبات معالجة؛ تستدعيها لحساب مصفوفة أو إجراء طلب شبكي وتستكمل شفرتك الخطية.</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                                <h4 class="font-bold text-brandindigo text-sm">Flask & FastAPI</h4>
+                                <p class="text-slate-600 leading-relaxed">أطر مصغرة (Micro-frameworks) تسيطر على خادم الويب والمزخرفات (Decorators) مع إتاحة حرية تجميع المكتبات.</p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+                                <h4 class="font-bold text-accentemerald text-sm">Django</h4>
+                                <p class="text-slate-600 leading-relaxed">إطار عمل شامل جداً (Batteries-Included) يوفر لوحة أدمن، نظام مصادقة، و ORM مدمج ويفرض مسارات صارمة.</p>
+                            </div>
+                        </div>
+
+                        <!-- Code Comparison -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div class="bg-slate-900 text-slate-100 p-4 rounded-xl space-y-2 font-mono">
+                                <span class="text-indigo-400 font-bold border-b border-slate-800 pb-1 block">1. نمط المكتبة (NumPy Data Calculation)</span>
+                                <pre class="text-slate-300 code-block overflow-x-auto">
+import numpy as np
+# المطور يستدعي وظائف المكتبة بشكل خطي مباشر
+data = [10, 20, 30]
+mean_val = np.mean(data)
+print(f"Result: {mean_val}")</pre>
+                            </div>
+
+                            <div class="bg-slate-900 text-slate-100 p-4 rounded-xl space-y-2 font-mono">
+                                <span class="text-emerald-400 font-bold border-b border-slate-800 pb-1 block">2. نمط إطار العمل (Django View Lifecycle)</span>
+                                <pre class="text-slate-300 code-block overflow-x-auto">
+from django.views import View
+# Django ينادي الصنف الخاص بك عند توجيه URL مطابق
+class UserListView(View):
+    def get(self, request):
+        return HttpResponse("الإطار ينادي دالة get")</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 5: Academic Summary & Architecture Synthesis -->
+        <section id="summary" class="space-y-6">
+            <div class="bg-white p-6 rounded-xl border border-warmborder shadow-sm space-y-3">
+                <div class="flex items-center space-x-2 space-x-reverse border-b border-slate-100 pb-3">
+                    <span class="w-3 h-3 rounded-full bg-brandindigo inline-block"></span>
+                    <h2 class="text-xl sm:text-2xl font-bold text-branddark">5. الخلاصة الأكاديمية والتوصيات الهندسية</h2>
+                </div>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    لا يوجد خيار "أفضل مطلقاً" بين المكتبة وإطار العمل؛ القرار الهندسي يعتمد بالكامل على متطلبات المشروع، حجم الفريق، ومعدل التغيير المتوقع. يوضح الجدول التالي الخلاصة التوجيهية للتقرير البحثي.
+                </p>
+            </div>
+
+            <!-- Summary Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- When to choose Library -->
+                <div class="bg-white p-6 rounded-xl border-t-4 border-t-brandindigo border-x border-b border-warmborder shadow-sm space-y-3">
+                    <h3 class="font-bold text-lg text-brandindigo flex items-center space-x-2 space-x-reverse">
+                        <span>💡 متى يُوصى باختيار المكتبات (Library Stack)؟</span>
+                    </h3>
+                    <ul class="text-xs text-slate-600 space-y-2.5 leading-relaxed">
+                        <li class="flex items-start space-x-2 space-x-reverse">
+                            <span class="text-brandindigo font-bold">▪</span>
+                            <span><strong>المشاريع ذات المتطلبات الفريدة:</strong> عندما يحتاج النظام لمعمارية مخصصة لا تتناسب مع النمط المعماري القياسي للأطر.</span>
+                        </li>
+                        <li class="flex items-start space-x-2 space-x-reverse">
+                            <span class="text-brandindigo font-bold">▪</span>
+                            <span><strong>الخدمات المصغرة (Microservices):</strong> عندما يكون الهدف بناء خدمة خفيفة جداً تؤدي مهمة واحدة بأقصى أداء.</span>
+                        </li>
+                        <li class="flex items-start space-x-2 space-x-reverse">
+                            <span class="text-brandindigo font-bold">▪</span>
+                            <span><strong>الفرق عالية الخبرة:</strong> الفرق التي تمتلك مهندسي أنظمة قادرين على إدارة التبعيات وحل التعارضات يدويًا.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- When to choose Framework -->
+                <div class="bg-white p-6 rounded-xl border-t-4 border-t-accentemerald border-x border-b border-warmborder shadow-sm space-y-3">
+                    <h3 class="font-bold text-lg text-accentemerald flex items-center space-x-2 space-x-reverse">
+                        <span>🏗️ متى يُوصى باختيار إطار العمل (Full Framework)؟</span>
+                    </h3>
+                    <ul class="text-xs text-slate-600 space-y-2.5 leading-relaxed">
+                        <li class="flex items-start space-x-2 space-x-reverse">
+                            <span class="text-accentemerald font-bold">▪</span>
+                            <span><strong>تطبيقات الويب القياسية للمؤسسات:</strong> الأنظمة التي تتطلب أنماطاً واضحة مثل المصادقة، التوجيه، وقواعد البيانات.</span>
+                        </li>
+                        <li class="flex items-start space-x-2 space-x-reverse">
+                            <span class="text-accentemerald font-bold">▪</span>
+                            <span><strong>الفرق البرمجية الضخمة والموزعة:</strong> لضمان التزام جميع المطورين بنفس الهيكلية وسهولة انضمام مطورين جدد.</span>
+                        </li>
+                        <li class="flex items-start space-x-2 space-x-reverse">
+                            <span class="text-accentemerald font-bold">▪</span>
+                            <span><strong>سرعة التسليم والتسويق (Time-to-Market):</strong> الاستفادة من الوظائف المدمجة مسبقاً لإنجاز المشروع بأقل وقت.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Academic Footer -->
+    <footer class="bg-white border-t border-warmborder mt-12 py-8 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 space-y-2">
+            <p class="font-bold text-slate-800 text-sm">دراسة مقارنة بين مصطلحي Library vs Framework</p>
+            <p class="text-slate-600 font-semibold">إعداد الطالب / : <span class="text-brandindigo font-bold">يحيى ناصر حمود بادر</span></p>
+            <p class="text-slate-400 text-[11px]">  تم إعداد وتطوير هذا التطبيق بإستخدام اداة "Gemini"</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic & Chart Initializations -->
+    <script>
+        // State Management for Simulator
+        let currentIocMode = 'library';
+        let simTimer1 = null;
+        let simTimer2 = null;
+
+        // Mode Switcher for IoC Simulator
+        function setIocMode(mode) {
+            currentIocMode = mode;
+            document.getElementById('btn-mode-lib').className = mode === 'library' 
+                ? 'px-3 py-1.5 text-xs font-bold rounded-md bg-brandindigo text-white transition-all shadow-sm' 
+                : 'px-3 py-1.5 text-xs font-bold rounded-md text-slate-600 hover:text-brandindigo transition-all';
+            
+            document.getElementById('btn-mode-fw').className = mode === 'framework' 
+                ? 'px-3 py-1.5 text-xs font-bold rounded-md bg-accentemerald text-white transition-all shadow-sm' 
+                : 'px-3 py-1.5 text-xs font-bold rounded-md text-slate-600 hover:text-brandindigo transition-all';
+
+            document.getElementById('sim-console').innerText = `// تم تحديد النمط: ${mode === 'library' ? 'المكتبة (تدفق التحكم بيدك المباشرة)' : 'إطار العمل (مبدأ انعكاس التحكم IoC)'}`;
+            resetSimVisuals();
+        }
+
+        function resetSimVisuals() {
+            clearTimeout(simTimer1);
+            clearTimeout(simTimer2);
+            for(let i=1; i<=3; i++) {
+                const card = document.getElementById(`sim-step-${i}`);
+                card.className = "p-4 rounded-xl border border-slate-200 bg-white transition-all duration-300 space-y-2";
+                document.getElementById(`sim-desc-${i}`).innerText = "انتظار بدء الخطوات...";
+            }
+            document.getElementById('sim-status-tag').innerText = "جاهز للمحاكاة";
+        }
+
+        function runIocSimulation() {
+            resetSimVisuals();
+            const consoleBox = document.getElementById('sim-console');
+            document.getElementById('sim-status-tag').innerText = "جاري التنفيذ...";
+            
+            if(currentIocMode === 'library') {
+                // Direct Execution Steps
+                document.getElementById('sim-title-1').innerText = "1. كود المطور (Main)";
+                document.getElementById('sim-title-2').innerText = "2. استدعاء API المكتبة";
+                document.getElementById('sim-title-3').innerText = "3. عودة النتيجة للكود";
+
+                highlightSimCard(1, "كود المطور يبدأ الدالة الرئيسية ويطلب حساب بيانات...", "// الخطوة 1: شفرة التطبيق تبدأ التدفق بنفسها\nlet input = getUserInput();");
+                
+                simTimer1 = setTimeout(() => {
+                    highlightSimCard(2, "المطور ينادي دالة MathLib.calculate() صراحة...", "// الخطوة 2: المطور يتصل بالمكتبة مباشرة ويستدعي دالتها\nlet result = MathLib.calculate(input);");
+                    
+                    simTimer2 = setTimeout(() => {
+                        highlightSimCard(3, "المكتبة ترجع النتيجة والمطور يستكمل بقية البرنامج...", "// الخطوة 3: المكتبة تنهي عملها وترجع التحكم للمطور\nrenderUI(result); // المطور يظل قادئاً للتدفق");
+                        document.getElementById('sim-status-tag').innerText = "اكتمل التدفق بنجاح";
+                    }, 1200);
+                }, 1200);
+
+            } else {
+                // Framework IoC Execution Steps
+                document.getElementById('sim-title-1').innerText = "1. الإطار يبدأ الخادم";
+                document.getElementById('sim-title-2').innerText = "2. تسجيل الـ Callback";
+                document.getElementById('sim-title-3').innerText = "3. الإطار يستدعي كودك!";
+
+                highlightSimCard(1, "إطار العمل يبدأ حلقة الأحداث وخادم الويب أولاً...", "// الخطوة 1: الإطار يبدأ حلقة الأحداث ويمتلك الدالة الرئيسية\nFramework.bootServer({ port: 8080 });");
+                
+                simTimer1 = setTimeout(() => {
+                    highlightSimCard(2, "أنت تسجل دالتك كـ Hook داخل الإطار...", "// الخطوة 2: المطور يسجل دالته داخل مسارات الإطار\nFramework.on('HTTP_REQUEST', myCustomHandler);");
+                    
+                    simTimer2 = setTimeout(() => {
+                        highlightSimCard(3, "عند استقبال طلب، الإطار يتصل بك! (Hollywood Law)", "// الخطوة 3: قانون هوليوود يكتمل! الإطار هو من ينادي كودك\n[Event Loop] -> Framework calls myCustomHandler(request);");
+                        document.getElementById('sim-status-tag').innerText = "اكتمل تدفق IoC بنجاح";
+                    }, 1200);
+                }, 1200);
+            }
+        }
+
+        function highlightSimCard(stepNum, desc, codeText) {
+            const card = document.getElementById(`sim-step-${stepNum}`);
+            card.className = "p-4 rounded-xl border-2 border-brandindigo bg-indigo-50/60 shadow-md transition-all duration-300 space-y-2";
+            document.getElementById(`sim-desc-${stepNum}`).innerText = desc;
+            
+            const consoleBox = document.getElementById('sim-console');
+            consoleBox.innerText += `\n${codeText}`;
+        }
+
+        // Tech Tab Switching
+        function switchTechTab(techKey) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tech-content').forEach(content => content.classList.add('hidden'));
+
+            document.getElementById(`tab-${techKey}`).classList.add('active');
+            document.getElementById(`tech-${techKey}`).classList.remove('hidden');
+        }
+
+        // Search Matrix Functionality
+        function searchMatrix() {
+            const query = document.getElementById('matrixSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#matrixTableBody tr');
+
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        // Category Matrix Filter Functionality
+        function filterMatrixCategory(category) {
+            const rows = document.querySelectorAll('#matrixTableBody tr');
+            rows.forEach(row => {
+                if(category === 'all') {
+                    row.style.display = '';
+                } else {
+                    const rowCat = row.getAttribute('data-category');
+                    row.style.display = (rowCat === category) ? '' : 'none';
+                }
+            });
+        }
+
+        // Chart.js Visualizations Setup
+        document.addEventListener('DOMContentLoaded', () => {
+            // Chart 1: Radar Chart Setup
+            const ctxRadar = document.getElementById('radarChart').getContext('2d');
+            new Chart(ctxRadar, {
+                type: 'radar',
+                data: {
+                    labels: ['التحكم والمرونة', 'سرعة البناء الأولي', 'سهولة الاستبدال', 'سهولة التعلم', 'أمان وتحديثات مركبة', 'اتساق كود الفريق'],
+                    datasets: [
+                        {
+                            label: 'المكتبة (Library)',
+                            data: [95, 45, 90, 85, 40, 50],
+                            borderColor: '#4f46e5',
+                            backgroundColor: 'rgba(79, 70, 229, 0.15)',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#4f46e5'
+                        },
+                        {
+                            label: 'إطار العمل (Framework)',
+                            data: [35, 95, 20, 45, 90, 95],
+                            borderColor: '#059669',
+                            backgroundColor: 'rgba(5, 150, 105, 0.15)',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#059669'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: '#e2e8f0' },
+                            grid: { color: '#e2e8f0' },
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            ticks: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Cairo', size: 11 } } }
+                    }
+                }
+            });
+
+            // Chart 2: Bar Chart Setup
+            const ctxBar = document.getElementById('barChart').getContext('2d');
+            new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: ['سهولة التعلم الابتدائي', 'وقت الإعداد السريع', 'سهولة الصيانة طويلة المدى'],
+                    datasets: [
+                        {
+                            label: 'المكتبة (Library)',
+                            data: [85, 40, 55],
+                            backgroundColor: '#818cf8'
+                        },
+                        {
+                            label: 'إطار العمل (Framework)',
+                            data: [45, 90, 85],
+                            backgroundColor: '#34d399'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100 }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { font: { family: 'Cairo', size: 11 } } }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
