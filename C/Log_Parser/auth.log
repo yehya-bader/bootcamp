@@ -1,0 +1,6 @@
+[2026-11-05 10:00:15] INFO: System boot complete
+[2026-11-05 10:01:22] WARNING: User admin authentication FAILED from 192.168.1.50
+[2026-11-05 10:01:25] WARNING: User root authentication FAILED from 192.168.1.50
+[2026-11-05 10:02:00] INFO: Service cron started
+[2026-11-05 10:03:10] ERROR: Database connection FAILED on port 5432
+[2026-11-05 10:04:00] INFO: User analyst logged in successfully
