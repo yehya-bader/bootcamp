@@ -1,0 +1,7 @@
+192.168.1.10 - - [10/Nov/2026:10:00:01] "GET /index.php HTTP/1.1" 200 4520
+10.0.0.5 - - [10/Nov/2026:10:01:15] "GET /products.php?id=1 UNION SELECT null,username,password FROM users HTTP/1.1" 200 6210
+192.168.1.15 - - [10/Nov/2026:10:02:00] "GET /about.html HTTP/1.1" 200 3120
+172.16.0.45 - - [10/Nov/2026:10:03:22] "GET /download.php?file=../../../../etc/passwd HTTP/1.1" 404 230
+10.0.0.5 - - [10/Nov/2026:10:04:10] "GET /search?q=<script>alert('XSS')</script> HTTP/1.1" 200 1540
+192.168.1.50 - - [10/Nov/2026:10:05:05] "GET /admin/login.php HTTP/1.1" 200 2410
+172.16.0.45 - - [10/Nov/2026:10:06:12] "GET /ping.php?host=127.0.0.1; whoami HTTP/1.1" 200 520
