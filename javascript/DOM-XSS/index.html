@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>اختبار ثغرات DOM XSS</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .box { margin-top: 20px; padding: 15px; border: 1px solid #ccc; min-height: 50px; background: #f9f9f9; }
+        button { padding: 10px; cursor: pointer; margin-left: 5px; }
+        .unsafe { background-color: #f8d7da; border: 1px solid #dc3545; color: #721c24; }
+        .safe { background-color: #d4edda; border: 1px solid #28a745; color: #155724; }
+    </style>
+</head>
+<body>
+    <h2>أداة اختبار DOM-Based XSS</h2>
+    
+    <label>أدخل النص أو الكود الخبيث (Payload):</label><br><br>
+    <input type="text" id="userInput" style="width: 400px; padding: 8px;" placeholder="مثال: <img src=x onerror=alert(1)>"><br><br>
+
+    <button id="unsafeBtn" class="unsafe">عرض غير آمن (innerHTML)</button>
+    <button id="safeBtn" class="safe">عرض آمن (textContent)</button>
+    
+    <hr>
+    
+    <h3>النتيجة:</h3>
+    <div id="resultOutput" class="box"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
