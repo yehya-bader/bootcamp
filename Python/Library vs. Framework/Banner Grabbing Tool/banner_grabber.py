@@ -1,53 +1,56 @@
 import socket
 
-def grab_banner(target, ip, port):
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.settimeout(2.5)
-    
+def get_banner(target, ip, port):
     try:
-        s.connect((ip, port))
-        
-        # إرسال طلب أولي لمنافذ الويب
-        if port in [80, 8080]:
-            request = f"HEAD / HTTP/1.1\r\nHost: {target}\r\nConnection: close\r\n\r\n"
-            s.sendall(request.encode())
-            
-        response = s.recv(1024)
-        
-        if response:
-            text = response.decode('utf-8', errors='ignore')
-            lines = text.splitlines()
-            # استخراج أول سطر غير فارغ من البانر
-            for line in lines:
-                if line.strip():
-                    return line.strip()
-                
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(2.5)
+            s.connect((ip, port))
+
+            if port in [80, 8000, 8080]:
+                msg = f"HEAD / HTTP/1.1\r\nHost: {target}\r\nConnection: close\r\n\r\n"
+                s.sendall(msg.encode())
+
+            data = s.recv(1024)
+
+            if data:
+                text = data.decode("utf-8", errors="ignore")
+                for line in text.splitlines():
+                    if line.strip():
+                        return line.strip()
+
     except Exception:
         return None
-    finally:
-        s.close()
         
     return None
 
 def main():
     target = input("Enter target IP or domain: ").strip()
-    
+
     try:
-        target_ip = socket.gethostbyname(target)
-    except:
-        print("Invalid Target!")
+        ip = socket.gethostbyname(target)
+    except socket.gaierror:
+        print("Invalid target.")
         return
 
-    ports_to_scan = [21, 22, 23, 25, 80, 110, 143, 8080]
-    
-    print(f"\nGrabbing banners for {target_ip}...")
-    
-    for port in ports_to_scan:
-        banner = grab_banner(target, target_ip, port)
-        if banner:
-            print(f"Port {port}: {banner}")
+    ports_input = input("Enter ports (comma separated) or press Enter for default: ").strip()
+
+    if ports_input:
+        try:
+            ports = [int(p.strip()) for p in ports_input.split(",")]
+        except ValueError:
+            print("Invalid port format.")
+            return
+    else:
+        ports = [21, 22, 23, 25, 80, 110, 143, 443, 8080]
+
+    print(f"\nScanning {ip}...")
+
+    for p in ports:
+        result = get_banner(target, ip, p)
+        if result:
+            print(f"Port {p}: {result}")
         else:
-            print(f"Port {port}: No Banner / Closed")
+            print(f"Port {p}: Closed / No Banner")
 
 if __name__ == "__main__":
     main()
